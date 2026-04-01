@@ -1,91 +1,189 @@
 [🇧🇷] [Lê em português](README-pt.md)
 
-# Fake News Classification System  
+# 🧠 Fake News Classification System (PT-BR)
 
-This repository contains a machine learning model trained to detect fake news in Portuguese, using the [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus) dataset. The goal is to create a neural network capable of distinguishing fake news from real news, helping to combat misinformation.  
+This repository contains a machine learning model for detecting fake news in Portuguese, using the [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus) dataset.
 
-## 📌 Technologies Used  
-- Python  
-- Pandas  
-- TensorFlow/Keras  
-- Scikit-learn  
-- SpaCy  
-- Unidecode  
-- Google Colab  
+The solution evolves from traditional LSTM-based approaches to Transformer-based models such as BERT, enabling a deeper understanding of semantic context in news articles.
 
-## 📂 Project Structure  
+---
+
+## 🤗 Model on Hugging Face
+
+The trained model is publicly available on the Hugging Face Hub:
+
+👉 https://huggingface.co/ericshantos/veritas-bert-ptbr/
+
+---
+
+## 🚀 Objective
+
+Develop a system capable of automatically classifying news as **real** or **fake**, helping to combat misinformation in the Portuguese language.
+
+---
+
+## 🧪 Technologies Used
+
+* Python
+* Pandas
+* PyTorch
+* Scikit-learn
+* SpaCy
+* Unidecode
+* Jupyter Notebook
+* Hugging Face Transformers (BERT)
+
+---
+
+## 🧠 Model Architecture
+
+The project includes two main approaches:
+
+### 🔹 Model 1 — LSTM (baseline)
+
+* Embedding layer
+* 3 LSTM layers
+* Dropout for regularization
+* Dense layer with sigmoid activation
+
+### 🔹 Model 2 — BERT (state-of-the-art)
+
+* Pretrained model: `neuralmind/bert-base-portuguese-cased`
+* WordPiece tokenization
+* Fine-tuning for binary classification
+* Optional vocabulary expansion with custom tokens
+
+---
+
+## 📂 Dataset
+
+The dataset used is **Fake.br-Corpus**, which contains real and fake news in Portuguese.
+
+### 📥 Download:
+
+```bash
+git clone https://github.com/roneysco/Fake.br-Corpus
 ```
-/
-├── veritas_br.ipynb  # Main notebook
-├── veritas_br.keras  # Saved trained model
-└── Fake.br-Corpus/                   # Dataset used
-```  
 
-## 🔍 How to Run the Project  
+Or run it directly from the notebook.
 
-1. **Clone the repository and install dependencies:**  
-```bash
-!git clone https://github.com/ericshantos/veritas_br.git
-```  
+---
 
-2. **Download the Fake.br-Corpus dataset:**  
+## 🗂️ Data Pipeline
 
-> By running the first cell of the notebook, you can download the dataset  
+The processing pipeline includes:
 
-```bash
-!git clone https://github.com/roneysco/Fake.br-Corpus
-```  
+* Text extraction and loading
+* Cleaning (noise removal, normalization)
+* Tokenization:
 
-3. **Run the Jupyter Notebook on Google Colab or locally:**  
-   - Google Colab: [Run on Colab](https://colab.research.google.com/github/ericshantos/br_fake_news_detector_model/blob/main/br_fake_news_detector_model.ipynb)  
-   - Locally: `jupyter notebook veritas_br.ipynb`  
+  * LSTM: traditional tokenization
+  * BERT: WordPiece tokenizer
+* Padding and truncation
+* Train/test split (80/20)
 
-## 🗂️ Data Preparation  
+---
 
-The Fake.br-Corpus dataset contains real and fake news articles in Portuguese, organized into text files. The script performs:  
-- **Reading and extracting news** (fake and real)  
-- **Text cleaning** (removal of stopwords, punctuation, and accents)  
-- **Tokenization** to convert words into numbers  
-- **Dataset splitting** into training (80%) and testing (20%)  
+## ⚙️ Training
 
-## 📊 Model Construction  
+### 📌 LSTM Hyperparameters
 
-The implemented neural network uses:  
-- **Embedding Layer** to transform words into dense vectors  
-- **Three LSTM layers** for learning textual patterns  
-- **Dropout Layers** to prevent overfitting  
-- **Dense layer with sigmoid activation** for binary classification  
+* Epochs: 5
+* Batch size: 128
+* Optimizer: Adam
+* Loss: Binary Crossentropy
 
-## ⚙️ Training and Evaluation  
+### 📌 BERT (Fine-tuning)
 
-The model was trained with the following parameters:  
-- **Epochs**: 5  
-- **Batch size**: 128  
-- **Optimization**: Adam  
-- **Loss function**: Binary Crossentropy  
+* Learning rate: ~2e-5
+* Batch size: 8–16
+* GPU recommended
 
-### 🎯 Results  
-After training, the model achieved satisfactory accuracy in classifying real and fake news, reaching an accuracy of 93% on the test set:  
+---
 
-![](./assets/result.png)  
+## 📊 Results
 
-## 💾 Saving the Model  
-The trained model is saved in Keras format for reuse in other applications:  
+The LSTM model achieved approximately **93% accuracy** on the test set.
+
+> BERT-based models show strong potential for improved performance due to better contextual understanding.
+
+![Result](./assets/result.png)
+
+---
+
+## 🚀 How to Use the Model
+
+You can load the model directly using Transformers:
+
 ```python
-model.save("veritas-lstm-ptbr.keras")
-```  
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-## 💐 thanks
+model_name = "ericshantos/veritas-bert-ptbr"
 
-I dedicate the construction of this model to all my high school teachers, from whom, among all the lessons they taught me, critical thinking was paramount in shaping this application.
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+```
 
-A special mention to Professor Winola Cunha, who, on numerous occasions, instructed me to pay attention in the morphosyntax class, as I would one day need it (and she was right).
+---
 
-## 📜 License  
+## 📦 Why Hugging Face?
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.  
+* Independent model versioning
+* Easy integration with APIs and applications
+* Multi-framework compatibility
+* Simplified distribution
 
-## 
+---
 
----  
-**Created by [Eric dos Santos](https://github.com/ericshantos)** 🚀  
+## 🧪 Future Improvements
+
+* [ ] Vocabulary expansion with domain-specific tokens
+* [ ] Training with more recent datasets
+* [ ] API deployment (FastAPI / Node.js)
+* [ ] Integration with FakeCheck project
+* [ ] Export to TensorFlow.js
+
+---
+
+## ▶️ How to Run
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/ericshantos/veritas_br.git
+```
+
+2. Run the notebook:
+
+* [Run on Google Colab](https://colab.research.google.com/github/ericshantos/br_fake_news_detector_model/blob/main/br_fake_news_detector_model.ipynb)
+* Or locally:
+
+```bash
+jupyter notebook veritas_br.ipynb
+```
+
+---
+
+## 💡 Project Insights
+
+* LSTM models are effective but limited in semantic understanding
+* BERT significantly improves contextual comprehension
+* Tokenization plays a critical role in performance
+
+---
+
+## 💐 Acknowledgements
+
+I dedicate this project to my high school teachers, whose lessons helped shape my critical thinking.
+
+Special thanks to Professor Winola Cunha, who emphasized the importance of syntax — and was absolutely right.
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for more details.
+
+---
+
+**Created by Eric dos Santos 🚀**
