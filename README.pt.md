@@ -28,8 +28,6 @@ Desenvolver um sistema capaz de classificar automaticamente notícias como **ver
 * Pandas
 * PyTorch
 * Scikit-learn
-* SpaCy
-* Unidecode
 * Jupyter Notebook
 * Hugging Face Transformers (BERT)
 
@@ -74,7 +72,6 @@ Ou execute diretamente no notebook.
 O processamento inclui:
 
 * Leitura e extração de textos
-* Limpeza (remoção de ruído, normalização)
 * Tokenização:
 
   * LSTM: tokenização clássica
@@ -103,7 +100,7 @@ O processamento inclui:
 
 ## 📊 Resultados
 
-O modelo LSTM atingiu aproximadamente **93% de acurácia** no conjunto de teste.
+O modelo LSTM atingiu aproximadamente **98% de acurácia** no conjunto de teste.
 
 > Modelos baseados em BERT apresentam potencial de melhoria significativa ao capturar melhor o contexto linguístico.
 
@@ -116,34 +113,30 @@ O modelo LSTM atingiu aproximadamente **93% de acurácia** no conjunto de teste.
 O modelo pode ser carregado diretamente via Transformers:
 
 ```python
+import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-model_name = "ericshantos/veritas-bert-ptbr"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
+model_name = "neuralmind/bert-base-portuguese-cased"
+
 tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name,
+    num_labels=2  
+)
+
+state_dict = torch.load("veritas-bert-ptbr.pth", map_location=device)
+
+model.load_state_dict(state_dict)
+
+model.to(device)
+model.eval()
 ```
 
 ---
 
-## 📦 Vantagens do Uso do Hugging Face
-
-* Versionamento do modelo independente do código
-* Facilidade de integração com APIs e aplicações
-* Compatibilidade com múltiplos frameworks
-* Distribuição simplificada
-
----
-
-## 🧪 Possíveis Melhorias
-
-* [ ] Expansão do vocabulário com tokens específicos
-* [ ] Treinamento com datasets mais recentes
-* [ ] Deploy como API (FastAPI / Node.js)
-* [ ] Integração com o projeto FakeCheck
-* [ ] Exportação para TensorFlow.js
-
----
 
 ## ▶️ Como Executar
 

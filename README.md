@@ -28,8 +28,6 @@ Develop a system capable of automatically classifying news as **real** or **fake
 * Pandas
 * PyTorch
 * Scikit-learn
-* SpaCy
-* Unidecode
 * Jupyter Notebook
 * Hugging Face Transformers (BERT)
 
@@ -74,7 +72,6 @@ Or run it directly from the notebook.
 The processing pipeline includes:
 
 * Text extraction and loading
-* Cleaning (noise removal, normalization)
 * Tokenization:
 
   * LSTM: traditional tokenization
@@ -103,7 +100,7 @@ The processing pipeline includes:
 
 ## 📊 Results
 
-The LSTM model achieved approximately **93% accuracy** on the test set.
+The LSTM model achieved approximately **98% accuracy** on the test set.
 
 > BERT-based models show strong potential for improved performance due to better contextual understanding.
 
@@ -116,32 +113,27 @@ The LSTM model achieved approximately **93% accuracy** on the test set.
 You can load the model directly using Transformers:
 
 ```python
+import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-model_name = "ericshantos/veritas-bert-ptbr"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
+model_name = "neuralmind/bert-base-portuguese-cased"
+
 tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name,
+    num_labels=2  
+)
+
+state_dict = torch.load("veritas-bert-ptbr.pth", map_location=device)
+
+model.load_state_dict(state_dict)
+
+model.to(device)
+model.eval()
 ```
-
----
-
-## 📦 Why Hugging Face?
-
-* Independent model versioning
-* Easy integration with APIs and applications
-* Multi-framework compatibility
-* Simplified distribution
-
----
-
-## 🧪 Future Improvements
-
-* [ ] Vocabulary expansion with domain-specific tokens
-* [ ] Training with more recent datasets
-* [ ] API deployment (FastAPI / Node.js)
-* [ ] Integration with FakeCheck project
-* [ ] Export to TensorFlow.js
 
 ---
 
