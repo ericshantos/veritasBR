@@ -1,10 +1,10 @@
-[🇧🇷] [Lê em português](README-pt.md)
+[🇧🇷] [Leia em Português](README.pt.md)
 
 # 🧠 Fake News Classification System (PT-BR)
 
-This repository contains a machine learning model for detecting fake news in Portuguese, using the [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus) dataset.
+This repository contains a machine learning model for detecting fake news in Portuguese, using the datasets [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus), [FakeTrue.br](https://github.com/Gabriel-Lino-Garcia/FakeRecogna) and [FakeRecogna](https://github.com/jpchav98/FakeTrue.Br).
 
-The solution evolves from traditional LSTM-based approaches to Transformer-based models such as BERT, enabling a deeper understanding of semantic context in news articles.
+The solution evolves from classic LSTM approaches to the use of Transformer-based models, such as BERT, allowing for a better capture of the news' semantic context.
 
 ---
 
@@ -12,13 +12,13 @@ The solution evolves from traditional LSTM-based approaches to Transformer-based
 
 The trained model is publicly available on the Hugging Face Hub:
 
-👉 https://huggingface.co/ericshantos/veritas-bert-ptbr/
+👉 [https://huggingface.co/ericshantos/veritas-bert-ptbr/](https://huggingface.co/ericshantos/veritas-bert-ptbr/)
 
 ---
 
 ## 🚀 Objective
 
-Develop a system capable of automatically classifying news as **real** or **fake**, helping to combat misinformation in the Portuguese language.
+To develop a system capable of automatically classifying news as **true** or **false**, assisting in the fight against misinformation in the Portuguese language.
 
 ---
 
@@ -33,57 +33,43 @@ Develop a system capable of automatically classifying news as **real** or **fake
 
 ---
 
-## 🧠 Model Architecture
+## 📂 Dataset (Data Expansion)
+The current version of the project utilizes a consolidated base from three major sources, tripling the original data volume to ensure greater generalization power:
 
-The project includes two main approaches:
+| Source | Description |
+| :--- | :--- |
+| **Fake.br-Corpus** | Reference dataset with real and fake news. |
+| **FakeTrue.br** | Complementary Portuguese news database. |
+| **FakeRecogna** | Expanded dataset for greater thematic diversity. |
 
-### 🔹 Model 1 — LSTM (baseline)
-
-* Embedding layer
-* 3 LSTM layers
-* Dropout for regularization
-* Dense layer with sigmoid activation
-
-### 🔹 Model 2 — BERT (state-of-the-art)
-
-* Pretrained model: `neuralmind/bert-base-portuguese-cased`
-* WordPiece tokenization
-* Fine-tuning for binary classification
-* Optional vocabulary expansion with custom tokens
+* **Total Volume:** ~22,684 news items (previously ~7,000).
+* **Distribution:** 90% training / 10% testing with stratified sampling.
 
 ---
 
-## 📂 Dataset
+## 🧠 Model Architecture (BERT)
+The model uses **BERTimbau** (BERT base for Portuguese) as its backbone, with a custom classification head:
 
-The dataset used is **Fake.br-Corpus**, which contains real and fake news in Portuguese.
+* **Encoder:** `neuralmind/bert-base-portuguese-cased`.
+* **Classification Head:**
+    * Linear (Hidden Size → 32) + GELU Activation.
+    * Dropout (0.2) for regularization.
+    * Linear (32 → 16) + GELU Activation.
+    * Linear (16 → 1) for binary output.
+* **Optimization:** Adam with a Learning Rate of $5e^{-5}$.
 
-### 📥 Download:
-
-```bash
-git clone https://github.com/roneysco/Fake.br-Corpus
-```
-
-Or run it directly from the notebook.
-
----
-
-## 🗂️ Data Pipeline
-
-The processing pipeline includes:
-
-* Text extraction and loading
-* Tokenization:
-
-  * LSTM: traditional tokenization
-  * BERT: WordPiece tokenizer
-* Padding and truncation
-* Train/test split (80/20)
+## ⚙️ Data Pipeline
+Processing now features specific extractors for each base (`BaseExtractor`):
+1.  **Extraction:** Parsing `.txt` (Fake.br), `.csv` (FakeTrue), and `.xlsx` (FakeRecogna) files.
+2.  **Cleaning:** Removal of null values and label normalization.
+3.  **Tokenization:** WordPiece (BERT) with `max_length=256`.
+4.  **Dataloader:** Implementation with `pin_memory` and `prefetch_factor` for GPU optimization.
 
 ---
 
 ## ⚙️ Training
 
-### 📌 LSTM Hyperparameters
+### 📌 Hyperparameters (LSTM)
 
 * Epochs: 5
 * Batch size: 128
@@ -93,8 +79,8 @@ The processing pipeline includes:
 ### 📌 BERT (Fine-tuning)
 
 * Learning rate: ~2e-5
-* Batch size: 8–16
-* GPU recommended
+* Batch size: 32
+* GPU usage recommended
 
 ---
 
@@ -102,7 +88,7 @@ The processing pipeline includes:
 
 The LSTM model achieved approximately **98% accuracy** on the test set.
 
-> BERT-based models show strong potential for improved performance due to better contextual understanding.
+> BERT-based models show significant potential for improvement by capturing linguistic context more effectively.
 
 ![Result](./assets/result.png)
 
@@ -110,7 +96,7 @@ The LSTM model achieved approximately **98% accuracy** on the test set.
 
 ## 🚀 How to Use the Model
 
-You can load the model directly using Transformers:
+The model can be loaded directly via Transformers:
 
 ```python
 import torch
@@ -137,6 +123,7 @@ model.eval()
 
 ---
 
+
 ## ▶️ How to Run
 
 1. Clone the repository:
@@ -158,23 +145,23 @@ jupyter notebook veritas_br.ipynb
 
 ## 💡 Project Insights
 
-* LSTM models are effective but limited in semantic understanding
-* BERT significantly improves contextual comprehension
-* Tokenization plays a critical role in performance
+* LSTM models are efficient but semantically limited.
+* BERT significantly improves context understanding.
+* Tokenization is a critical factor for performance.
 
 ---
 
-## 💐 Acknowledgements
+## 💐 Acknowledgments
 
-I dedicate this project to my high school teachers, whose lessons helped shape my critical thinking.
+I dedicate this project to my high school teachers, who contributed to the development of my critical thinking.
 
-Special thanks to Professor Winola Cunha, who emphasized the importance of syntax — and was absolutely right.
+Special mention to Professor Winola Cunha, who reinforced the importance of morphosyntax — and was absolutely right.
 
 ---
 
 ## 📜 License
 
-This project is licensed under the MIT License. See [LICENSE](./LICENSE) for more details.
+This project is under the MIT license. See [LICENSE](./LICENSE) for more details.
 
 ---
 

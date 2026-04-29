@@ -2,7 +2,7 @@
 
 # 🧠 Sistema de Classificação de Notícias Falsas (PT-BR)
 
-Este repositório contém um modelo de machine learning para detecção de fake news em português, utilizando o dataset [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus).
+Este repositório contém um modelo de machine learning para detecção de fake news em português, utilizando as base de dados [Fake.br-Corpus](https://github.com/roneysco/Fake.br-Corpus), [FakeTrue.br](https://github.com/jpchav98/FakeTrue.Br) e [FakeRecogna](https://github.com/Gabriel-Lino-Garcia/FakeRecogna).
 
 A solução evolui de abordagens clássicas com LSTM para o uso de modelos baseados em Transformers, como o BERT, permitindo capturar melhor o contexto semântico das notícias.
 
@@ -33,51 +33,37 @@ Desenvolver um sistema capaz de classificar automaticamente notícias como **ver
 
 ---
 
-## 🧠 Arquitetura do Modelo
+## 📂 Dataset (Expansão de Dados)
+A versão atual do projeto utiliza uma base consolidada de três grandes fontes, triplicando o volume de dados original para garantir maior poder de generalização:
 
-O projeto contempla duas abordagens principais:
+| Fonte | Descrição |
+| :--- | :--- |
+| **Fake.br-Corpus** | Dataset de referência com notícias reais e falsas. |
+| **FakeTrue.br** | Base complementar de notícias em português. |
+| **FakeRecogna** | Dataset expandido para maior diversidade de temas. |
 
-### 🔹 Modelo 1 — LSTM (baseline)
-
-* Camada de Embedding
-* 3 camadas LSTM
-* Dropout para regularização
-* Camada densa com sigmoid
-
-### 🔹 Modelo 2 — BERT (estado da arte)
-
-* Modelo pré-treinado: `neuralmind/bert-base-portuguese-cased`
-* Tokenização com WordPiece
-* Fine-tuning para classificação binária
-* Possibilidade de expansão de vocabulário com novos tokens
+* **Volume Total:** ~22.684 notícias (anteriormente ~7.000).
+* **Distribuição:** 90% treino / 10% teste com amostragem estratificada.
 
 ---
 
-## 📂 Dataset
+## 🧠 Arquitetura do Modelo (BERT)
+O modelo utiliza o **BERTimbau** (BERT base para Português) como base, com uma cabeça de classificação personalizada:
 
-O dataset utilizado é o **Fake.br-Corpus**, contendo notícias reais e falsas em português.
+* **Encoder:** `neuralmind/bert-base-portuguese-cased`.
+* **Cabeça de Classificação:**
+    * Linear (Hidden Size → 32) + Ativação GELU.
+    * Dropout (0.2) para regularização.
+    * Linear (32 → 16) + Ativação GELU.
+    * Linear (16 → 1) para saída binária.
+* **Otimização:** Adam com Learning Rate de $5e^{-5}$.
 
-### 📥 Download:
-
-```bash
-git clone https://github.com/roneysco/Fake.br-Corpus
-```
-
-Ou execute diretamente no notebook.
-
----
-
-## 🗂️ Pipeline de Dados
-
-O processamento inclui:
-
-* Leitura e extração de textos
-* Tokenização:
-
-  * LSTM: tokenização clássica
-  * BERT: WordPiece Tokenizer
-* Padding e truncamento
-* Split treino/teste (80/20)
+## ⚙️ Pipeline de Dados
+O processamento agora conta com extratores específicos para cada base (`BaseExtractor`):
+1.  **Extração:** Parsing de arquivos `.txt` (Fake.br), `.csv` (FakeTrue) e `.xlsx` (FakeRecogna).
+2.  **Limpeza:** Remoção de valores nulos e normalização de rótulos.
+3.  **Tokenização:** WordPiece (BERT) com `max_length=256`.
+4.  **Dataloader:** Implementação com `pin_memory` e `prefetch_factor` para otimização de GPU.
 
 ---
 
@@ -93,14 +79,14 @@ O processamento inclui:
 ### 📌 BERT (Fine-tuning)
 
 * Learning rate: ~2e-5
-* Batch size: 8–16
+* Batch size: 32
 * Uso de GPU recomendado
 
 ---
 
 ## 📊 Resultados
 
-O modelo LSTM atingiu aproximadamente **98% de acurácia** no conjunto de teste.
+O modelo LSTM atingiu aproximadamente **97% de acurácia** no conjunto de teste.
 
 > Modelos baseados em BERT apresentam potencial de melhoria significativa ao capturar melhor o contexto linguístico.
 
