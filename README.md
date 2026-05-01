@@ -104,18 +104,8 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model_name = "neuralmind/bert-base-portuguese-cased"
-
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-model = AutoModelForSequenceClassification.from_pretrained(
-    model_name,
-    num_labels=2  
-)
-
-state_dict = torch.load("veritas-bert-ptbr.pth", map_location=device)
-
-model.load_state_dict(state_dict)
+tokenizer = AutoTokenizer.from_pretrained(repo_id)
+model = AutoModelForSequenceClassification.from_pretrained(repo_id)
 
 model.to(device)
 model.eval()
@@ -129,16 +119,16 @@ model.eval()
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ericshantos/veritas_br.git
+git clone https://github.com/ericshantos/veritasBR.git
 ```
 
 2. Run the notebook:
 
-* [Run on Google Colab](https://colab.research.google.com/github/ericshantos/br_fake_news_detector_model/blob/main/br_fake_news_detector_model.ipynb)
+* [Run on Google Colab](https://colab.research.google.com/github/ericshantos/veritasBR/blob/main/veritasBR_v3.ipynb)
 * Or locally:
 
 ```bash
-jupyter notebook veritas_br.ipynb
+jupyter notebook veritasBR.ipynb
 ```
 
 ---
